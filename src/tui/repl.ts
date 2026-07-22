@@ -235,7 +235,7 @@ export async function startRepl(opts: {
       `  ${c.dim("cwd")}  ${BOLD(cwd)}`
     );
     console.log(
-      `  ${c.dim("model")} ${BOLD(c.cfg.model)}`
+      `  ${c.dim("model")} ${BOLD(cfg.model)}`
     );
     console.log();
     console.log(
