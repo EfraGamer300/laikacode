@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import type { Tool } from "../types.ts";
+import type { Tool } from "../types";
 
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

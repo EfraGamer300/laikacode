@@ -4,8 +4,8 @@ import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadConfig, saveConfig, ensureConfig, configFile } from "./config.ts";
-import { checkForUpdates, performUpdate, getCurrentVersion } from "./updater.ts";
+import { loadConfig, saveConfig, ensureConfig, configFile } from "./config";
+import { checkForUpdates, performUpdate, getCurrentVersion } from "./updater";
 
 const args = process.argv.slice(2);
 const cwd = process.cwd();
@@ -223,7 +223,7 @@ async function main() {
 
   ensureConfig();
 
-  const { startRepl } = await import("./tui/repl.ts");
+  const { startRepl } = await import("./tui/repl.js");
   const initialPrompt = args.filter((a) => !a.startsWith("--")).join(" ") || undefined;
   await startRepl({ cfg: ensureConfig(), cwd, initialPrompt });
 }

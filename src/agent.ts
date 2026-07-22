@@ -1,6 +1,6 @@
 import chalk from "chalk";
-import type { ContentPart, Message, Provider, StreamEvent, Tool, ToolDefinition, ToolExecutionContext } from "./types.ts";
-import { buildSystemPrompt } from "./prompt.ts";
+import type { ContentPart, Message, Provider, StreamEvent, Tool, ToolDefinition, ToolExecutionContext } from "./types";
+import { buildSystemPrompt } from "./prompt";
 
 export interface AgentRunOptions {
   provider: Provider;

@@ -1,4 +1,4 @@
-import type { StreamEvent } from "../types.ts";
+import type { StreamEvent } from "../types";
 
 export interface SSEParserOpts {
   onText: (text: string) => void;

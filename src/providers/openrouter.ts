@@ -1,4 +1,4 @@
-import type { Message, Provider, StreamEvent, ToolDefinition, ContentPart } from "../types.ts";
+import type { Message, Provider, StreamEvent, ToolDefinition, ContentPart } from "../types";
 
 interface OpenRouterArgs {
   apiKey: string;

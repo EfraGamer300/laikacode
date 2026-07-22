@@ -1,6 +1,6 @@
 import os from "node:os";
 import path from "node:path";
-import type { ToolDefinition } from "./types.ts";
+import type { ToolDefinition } from "./types";
 
 function toolUsage(tools: ToolDefinition[]): string {
   return tools

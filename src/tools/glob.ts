@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { Tool } from "../types.ts";
+import type { Tool } from "../types";
 
 function globToRegex(g: string): RegExp {
   const parts: string[] = [];

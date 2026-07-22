@@ -1,4 +1,4 @@
-import type { Message, Provider, ToolDefinition, ContentPart } from "../types.ts";
+import type { Message, Provider, ToolDefinition, ContentPart } from "../types";
 
 interface AnthropicArgs {
   apiKey: string;

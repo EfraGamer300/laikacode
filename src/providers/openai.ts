@@ -1,5 +1,5 @@
-import type { Message, Provider, StreamEvent, ToolDefinition, ContentPart } from "../types.ts";
-import { createSSEParser } from "./sse.ts";
+import type { Message, Provider, StreamEvent, ToolDefinition, ContentPart } from "../types";
+import { createSSEParser } from "./sse";
 
 interface OpenAIArgs {
   apiKey: string;

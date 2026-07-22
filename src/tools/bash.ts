@@ -1,5 +1,5 @@
 import { execSync, spawn } from "node:child_process";
-import type { Tool } from "../types.ts";
+import type { Tool } from "../types";
 
 export const bashTool: Tool = {
   definition: {

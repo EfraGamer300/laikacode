@@ -1,13 +1,13 @@
 import readline from "node:readline";
 import chalk from "chalk";
-import type { AgentEvent } from "../agent.ts";
-import { runAgent } from "../agent.ts";
-import type { Config } from "../config.ts";
-import { createProvider, PROVIDERS, getProviderInfo, type ProviderName } from "../providers/index.ts";
-import type { Message } from "../types.ts";
-import { ALL_TOOLS, toolByName } from "../tools/index.ts";
-import { renderMarkdown, truncJSON, truncate } from "./format.ts";
-import { checkForUpdates, performUpdate, getCurrentVersion } from "../updater.ts";
+import type { AgentEvent } from "../agent";
+import { runAgent } from "../agent";
+import type { Config } from "../config";
+import { createProvider, PROVIDERS, getProviderInfo, type ProviderName } from "../providers/index";
+import type { Message } from "../types";
+import { ALL_TOOLS, toolByName } from "../tools/index";
+import { renderMarkdown, truncJSON, truncate } from "./format";
+import { checkForUpdates, performUpdate, getCurrentVersion } from "../updater";
 
 interface SlashCommand {
   name: string;

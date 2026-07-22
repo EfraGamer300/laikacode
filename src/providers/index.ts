@@ -1,9 +1,9 @@
-import type { Provider } from "../types.ts";
-import type { Config } from "../config.ts";
-import { createOpenRouterProvider } from "./openrouter.ts";
-import { createOpenAIProvider } from "./openai.ts";
-import { createAnthropicProvider } from "./anthropic.ts";
-import { createOllamaProvider } from "./ollama.ts";
+import type { Provider } from "../types";
+import type { Config } from "../config";
+import { createOpenRouterProvider } from "./openrouter";
+import { createOpenAIProvider } from "./openai";
+import { createAnthropicProvider } from "./anthropic";
+import { createOllamaProvider } from "./ollama";
 
 export type ProviderName = "openrouter" | "openai" | "anthropic" | "ollama";
 

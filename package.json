@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "tsx src/main.ts",
-    "start": "tsx src/main.ts",
+    "start": "node bin/laikacode.js",
     "setup": "npm install && npm link",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
@@ -21,10 +21,17 @@
     "coding",
     "assistant",
     "openrouter",
-    "agent"
+    "agent",
+    "anthropic",
+    "openai",
+    "ollama"
   ],
-  "author": "LaikaCode",
+  "author": "EfraGamer300",
   "license": "MIT",
+  "files": [
+    "bin",
+    "src"
+  ],
   "dependencies": {
     "chalk": "^5.3.0",
     "tsx": "^4.23.1",
@@ -35,6 +42,6 @@
     "typescript": "^5.7.2"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   }
 }

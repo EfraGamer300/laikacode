@@ -1,10 +1,10 @@
-import type { Tool } from "../types.ts";
-import { bashTool } from "./bash.ts";
-import { readTool } from "./read.ts";
-import { writeTool } from "./write.ts";
-import { editTool } from "./edit.ts";
-import { globTool } from "./glob.ts";
-import { grepTool } from "./grep.ts";
+import type { Tool } from "../types";
+import { bashTool } from "./bash";
+import { readTool } from "./read";
+import { writeTool } from "./write";
+import { editTool } from "./edit";
+import { globTool } from "./glob";
+import { grepTool } from "./grep";
 
 export const ALL_TOOLS: Tool[] = [
   bashTool,
