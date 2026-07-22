@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadConfig, saveConfig, ensureConfig, configFile } from "./config.ts";
+import { checkForUpdates, performUpdate, getCurrentVersion } from "./updater.ts";
 
 const args = process.argv.slice(2);
 const cwd = process.cwd();
@@ -13,32 +14,33 @@ const COMPLETIONS_DIR = path.resolve(__dirname, "..", "completions");
 
 function printHelp() {
   console.log(`
-\x1b[1;36m    ╭──────────────────────────────────────╮
-    │\x1b[0m  \x1b[1m\x1b[1;36mLaikaCode\x1b[0m  \x1b[2mv0.1.0\x1b[0m                  \x1b[1;36m│\x1b[0m
-\x1b[1;36m    │\x1b[0m  \x1b[2mAI coding assistant\x1b[0m                   \x1b[1;36m│\x1b[0m
-\x1b[1;36m    │\x1b[0m  \x1b[2mPowered by OpenRouter\x1b[0m                \x1b[1;36m│\x1b[0m
-\x1b[1;36m    ╰──────────────────────────────────────╯\x1b[0m
+\x1b[38;2;124;58;237m        ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
+        ┃\x1b[0m  \x1b[1;38;2;167;139;250m🦴  LaikaCode\x1b[0m  \x1b[2mv0.1.0\x1b[0m            \x1b[38;2;124;58;237m┃
+\x1b[38;2;124;58;237m        ┃\x1b[0m  \x1b[2mAI-powered coding assistant\x1b[0m       \x1b[38;2;124;58;237m┃
+\x1b[38;2;124;58;237m        ┃\x1b[0m  \x1b[2mgithub.com/EfraGamer300\x1b[0m          \x1b[38;2;124;58;237m┃
+\x1b[38;2;124;58;237m        ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\x1b[0m
 
-\x1b[1;33mUsage:\x1b[0m
+\x1b[1;38;2;124;58;237mUsage:\x1b[0m
   laikacode [options] [prompt]       Start REPL or run a single prompt
   laikacode config [key] [value]     Get or set config values
   laikacode completions [--install]  Show or install shell completions
+  laikacode --update                 Check and install updates
   laikacode --version                Show version
   laikacode --help                   Show this help
 
-\x1b[1;33mExamples:\x1b[0m
+\x1b[1;38;2;124;58;237mExamples:\x1b[0m
   laikacode                          Start interactive REPL
   laikacode "fix the bug in main.ts"  Run a single prompt
   laikacode config set apiKey sk-or-...  Set API key
   laikacode config get model         Show current model
   laikacode completions --install    Install bash/zsh completions
 
-\x1b[1;33mEnvironment:\x1b[0m
+\x1b[1;38;2;124;58;237mEnvironment:\x1b[0m
   OPENROUTER_API_KEY   OpenRouter API key (required)
   LAIKACODE_MODEL      Override model
   LAIKACODE_BASE_URL   Override base URL
 
-\x1b[1;33mConfig:\x1b[0m
+\x1b[1;38;2;124;58;237mConfig:\x1b[0m
   Config file: ${configFile()}
   Edit directly or use: laikacode config set <key> <value>
 `);
@@ -149,6 +151,41 @@ function handleCompletions(completionsArgs: string[]) {
   }
 }
 
+async function handleUpdate() {
+  const current = getCurrentVersion();
+  console.log(`\x1b[1;36m  Checking for updates...\x1b[0m`);
+
+  const info = await checkForUpdates();
+
+  if (!info.hasUpdate) {
+    console.log(`\x1b[32m  ✓ Already on the latest version (v${current})\x1b[0m`);
+    return;
+  }
+
+  console.log(`\x1b[33m  ▸ New version available: \x1b[1mv${info.latest}\x1b[0m\x1b[33m (current: v${info.current})\x1b[0m`);
+
+  if (info.body) {
+    const lines = info.body.split("\n").slice(0, 10);
+    console.log(`\n\x1b[2m  Release notes:\x1b[0m`);
+    for (const line of lines) {
+      console.log(`  ${line}`);
+    }
+    console.log();
+  }
+
+  // Auto-update (non-interactive for now)
+  const result = await performUpdate((line) => {
+    if (line) console.log(`  ${line}`);
+  });
+
+  if (result.success) {
+    console.log(`\x1b[32m  ✓ ${result.message}\x1b[0m`);
+  } else {
+    console.error(`\x1b[31m  ✗ ${result.message}\x1b[0m`);
+    process.exit(1);
+  }
+}
+
 async function main() {
   if (args.includes("--version") || args.includes("-v")) {
     printVersion();
@@ -166,6 +203,23 @@ async function main() {
     handleCompletions(args.slice(1));
     return;
   }
+  if (args.includes("--update")) {
+    await handleUpdate();
+    return;
+  }
+
+  // Background update check
+  checkForUpdates().then((info) => {
+    if (info.hasUpdate) {
+      console.log(
+        `\x1b[33m  ▸ New version available: \x1b[1mv${info.latest}\x1b[0m\x1b[33m (current: v${info.current})\x1b[0m`
+      );
+      console.log(
+        `\x1b[2m    Run \x1b[0m\x1b[1mlaikacode --update\x1b[0m\x1b[2m to install\x1b[0m\n`
+      );
+    }
+  }).catch(() => {});
+
   ensureConfig();
 
   const { startRepl } = await import("./tui/repl.ts");
