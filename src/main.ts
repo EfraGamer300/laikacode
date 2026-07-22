@@ -36,7 +36,8 @@ function printHelp() {
   laikacode completions --install    Install bash/zsh completions
 
 \x1b[1;38;2;124;58;237mEnvironment:\x1b[0m
-  OPENROUTER_API_KEY   OpenRouter API key (required)
+  OPENROUTER_API_KEY   OpenRouter API key (required for openrouter/openai/anthropic)
+  LAIKACODE_PROVIDER   Override provider (openrouter, openai, anthropic, ollama)
   LAIKACODE_MODEL      Override model
   LAIKACODE_BASE_URL   Override base URL
 
@@ -48,7 +49,7 @@ function printHelp() {
 
 function printVersion() {
   console.log("laikacode v0.1.0");
-  console.log("OpenRouter AI coding assistant");
+  console.log("AI coding assistant");
 }
 
 function handleConfig(configArgs: string[]) {

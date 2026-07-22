@@ -5,6 +5,7 @@ import YAML from "yaml";
 
 export interface Config {
   apiKey: string;
+  provider: string;
   model: string;
   smallModel: string;
   baseURL: string;
@@ -14,6 +15,7 @@ export interface Config {
 
 const DEFAULTS: Config = {
   apiKey: "",
+  provider: "openrouter",
   model: "anthropic/claude-3.5-sonnet",
   smallModel: "anthropic/claude-3.5-haiku",
   baseURL: "https://openrouter.ai/api/v1",
@@ -42,6 +44,7 @@ export function loadConfig(): Config {
     }
   }
   if (process.env.OPENROUTER_API_KEY) cfg.apiKey = process.env.OPENROUTER_API_KEY;
+  if (process.env.LAIKACODE_PROVIDER) cfg.provider = process.env.LAIKACODE_PROVIDER;
   if (process.env.LAIKACODE_MODEL) cfg.model = process.env.LAIKACODE_MODEL;
   if (process.env.LAIKACODE_SMALL_MODEL) cfg.smallModel = process.env.LAIKACODE_SMALL_MODEL;
   if (process.env.LAIKACODE_BASE_URL) cfg.baseURL = process.env.LAIKACODE_BASE_URL;
@@ -58,11 +61,12 @@ export function saveConfig(patch: Partial<Config>): void {
 
 export function ensureConfig(): Config {
   const cfg = loadConfig();
-  if (!cfg.apiKey) {
+  if (cfg.provider !== "ollama" && !cfg.apiKey) {
     console.error(
-      "LaikaCode: OPENROUTER_API_KEY not set.\n" +
+      "LaikaCode: API key not set.\n" +
         "Set it via env var, or run: laikacode config set apiKey sk-or-...\n" +
-        "Or edit " + configFile()
+        "Or use Ollama (no key needed): laikacode config set provider ollama\n" +
+        "Config: " + configFile()
     );
     process.exit(1);
   }

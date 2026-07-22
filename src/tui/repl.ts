@@ -3,7 +3,7 @@ import chalk from "chalk";
 import type { AgentEvent } from "../agent.ts";
 import { runAgent } from "../agent.ts";
 import type { Config } from "../config.ts";
-import { createOpenRouterProvider } from "../providers/openrouter.ts";
+import { createProvider, PROVIDERS, getProviderInfo, type ProviderName } from "../providers/index.ts";
 import type { Message } from "../types.ts";
 import { ALL_TOOLS, toolByName } from "../tools/index.ts";
 import { renderMarkdown, truncJSON, truncate } from "./format.ts";
@@ -65,10 +65,7 @@ export async function startRepl(opts: {
   initialPrompt?: string;
 }): Promise<void> {
   const { cfg, cwd } = opts;
-  const provider = createOpenRouterProvider({
-    apiKey: cfg.apiKey,
-    baseURL: cfg.baseURL,
-  });
+  let provider = createProvider(cfg);
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -130,6 +127,52 @@ export async function startRepl(opts: {
       name: "/cwd",
       describe: "Show working directory",
       run: (_a, c2) => console.log(`  ${c.dim(c2.cwd)}`),
+    },
+    {
+      name: "/provider",
+      describe: "Show or switch provider (openrouter, openai, anthropic, ollama)",
+      run: (args, c2) => {
+        if (!args.trim()) {
+          console.log();
+          console.log(`  ${c.accent.bold("Providers")}`);
+          console.log(`  ${SEP}`);
+          for (const p of PROVIDERS) {
+            const active = p.name === c2.cfg.provider ? c.green(" ● active") : "";
+            const key = p.needsApiKey ? `${c.dim("key:")} ${c2.cfg.apiKey ? c.dim("set") : c.red("missing")}` : c.dim("no key needed");
+            console.log(
+              `  ${c.accentLight(p.label.padEnd(12))} ${c.dim(p.description)}`
+            );
+            console.log(
+              `  ${"".padEnd(12)} ${key}${active}`
+            );
+          }
+          console.log();
+          console.log(`  ${c.dim("usage")}  /provider <name>`);
+          console.log();
+        } else {
+          const name = args.trim().toLowerCase();
+          const info = getProviderInfo(name);
+          if (!info) {
+            console.log(`  ${c.red("✘")} Unknown provider: ${c.white(name)}`);
+            console.log(`  ${c.dim("Available:")} ${PROVIDERS.map((p) => p.name).join(", ")}`);
+            return;
+          }
+          if (info.needsApiKey && !c2.cfg.apiKey) {
+            console.log(`  ${c.red("✘")} ${info.label} requires an API key`);
+            console.log(`  ${c.dim("Set it:")} laikacode config set apiKey <key>`);
+            return;
+          }
+          c2.cfg.provider = info.name;
+          c2.cfg.baseURL = info.defaultBaseURL;
+          if (!c2.cfg.model.includes("/")) {
+            c2.cfg.model = info.defaultModel;
+          }
+          provider = createProvider(c2.cfg);
+          console.log(`  ${c.green("✔")} provider → ${BOLD(info.label)}`);
+          console.log(`  ${c.dim("base")}  ${info.defaultBaseURL}`);
+          console.log(`  ${c.dim("model")} ${c2.cfg.model}`);
+        }
+      },
     },
     {
       name: "/tools",
@@ -232,10 +275,13 @@ export async function startRepl(opts: {
   function showBanner() {
     process.stdout.write(BANNER);
     console.log(
-      `  ${c.dim("cwd")}  ${BOLD(cwd)}`
+      `  ${c.dim("cwd")}      ${BOLD(cwd)}`
     );
     console.log(
-      `  ${c.dim("model")} ${BOLD(cfg.model)}`
+      `  ${c.dim("provider")} ${BOLD(cfg.provider || "openrouter")}`
+    );
+    console.log(
+      `  ${c.dim("model")}    ${BOLD(cfg.model)}`
     );
     console.log();
     console.log(
